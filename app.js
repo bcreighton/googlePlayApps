@@ -5,9 +5,54 @@ const app = express();
 
 app.use(morgan('dev'));
 
+const playstore = require('./playstore.js');
+
 app.get('/apps', (req, res) => {
+  let results = playstore;
+  let { sort, genres } = req.query;
+
+  // validate generes
+  if (genres) {
+    if (!['Action', 'Puzzle', 'Strategy', 'Casual', 'Arcade', 'Card'].includes(genres)) {
+      return res
+        .status(400)
+        .send('Genre must be one of Action, Puzzle, Strategy, Casual, Arcade, Card');
+    }
+  }
+
+  // validate sort
+  if (sort) {
+    if (!['rating', 'app'].includes(sort)) {
+      return res
+        .status(400)
+        .send('Sort must be rating or app');
+    }
+  }
+
+  // search by genres
+  if (genres) {
+    results.filter(app => {
+      app
+        .Genres
+        .includes(genre)
+    })
+  }
+
+  // sort results if sort param selected
+  if (sort) {
+    results
+      .sort((a, b) => {
+        return a[sort] > b[sort]
+          ? 1
+          : a[sort] < b[sort]
+            ? -1
+            : 0;
+      })
+  }
+
+  // if no query params return all apps
   res
-    .send('Hello, apps');
+    .json(results);
 })
 
 app.listen(8000, () => {
