@@ -8,8 +8,8 @@ app.use(morgan('dev'));
 const playstore = require('./playstore.js');
 
 app.get('/apps', (req, res) => {
-  let results = playstore;
   let { sort, genres } = req.query;
+  let results = playstore;
 
   // validate generes
   if (genres) {
@@ -22,7 +22,7 @@ app.get('/apps', (req, res) => {
 
   // validate sort
   if (sort) {
-    if (!['rating', 'app'].includes(sort)) {
+    if (!['Rating', 'App'].includes(sort)) {
       return res
         .status(400)
         .send('Sort must be rating or app');
@@ -31,23 +31,34 @@ app.get('/apps', (req, res) => {
 
   // search by genres
   if (genres) {
-    results.filter(app => {
-      app
-        .Genres
-        .includes(genre)
-    })
+    results = playstore
+      .filter(app =>
+        app
+          .Genres
+          .includes(genres))
   }
 
   // sort results if sort param selected
   if (sort) {
-    results
-      .sort((a, b) => {
-        return a[sort] > b[sort]
-          ? 1
-          : a[sort] < b[sort]
-            ? -1
-            : 0;
-      })
+    if (sort === 'App') {
+      results
+        .sort((a, b) => {
+          return a[sort] > b[sort]
+            ? 1
+            : a[sort] < b[sort]
+              ? -1
+              : 0;
+        })
+    } else {
+      results
+        .sort((a, b) => {
+          return a[sort] < b[sort]
+            ? 1
+            : a[sort] > b[sort]
+              ? -1
+              : 0;
+        })
+    }
   }
 
   // if no query params return all apps
