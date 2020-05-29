@@ -3,7 +3,7 @@ import Application from './components/application/Application'
 
 class App extends Component {
   state = {
-    apps: [],
+    applications: [],
     sort: '',
     genres: '',
     error: null,
@@ -21,8 +21,54 @@ class App extends Component {
     })
   }
 
+  handleSubmit(e) {
+    e.preventDefault();
+
+    //construct URL with query string
+    const baseUrl = 'http://localhost:8000/apps';
+    const params = [];
+
+    if (this.state.sort) {
+      params.push(`sort=${this.state.sort}`);
+    }
+
+    if (this.state.genres) {
+      params.push(`genres=${this.state.genres}`);
+    }
+
+    const query = params.join('&');
+    const url = `${baseUrl}?${query}`;
+
+    //api request
+    fetch(url)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+
+      .then(data => {
+        this.setState({
+          applications: data,
+          error: null, //reset all errors
+        })
+      })
+
+      .catch(err => {
+        this.setState({
+          error: `Sorry, apps cannot be retrieved at this time`
+        })
+      })
+  }
+
 
   render() {
+    // map over all apps
+    const applications = this.state.applications.map((applicaiton, i) => {
+      return <Application {...application} key={i} />
+    })
+
     return (
       <main className="app">
         <h1>Google Play App Search</h1>
@@ -60,7 +106,7 @@ class App extends Component {
 
           <div className="error">{this.state.error}</div>
         </div>
-        {apps}
+        {applications}
       </main>
     );
   }
