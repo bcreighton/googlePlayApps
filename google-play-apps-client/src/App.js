@@ -65,7 +65,7 @@ class App extends Component {
 
   render() {
     // map over all apps
-    const applications = this.state.applications.map((applicaiton, i) => {
+    const applications = this.state.applications.map((application, i) => {
       return <Application {...application} key={i} />
     })
 
