@@ -27,7 +27,7 @@ app.get('/apps', (req, res) => {
     if (!['Rating', 'App'].includes(sort)) {
       return res
         .status(400)
-        .send('Sort must be rating or app');
+        .send('Sort must be Rating or App');
     }
   }
 
